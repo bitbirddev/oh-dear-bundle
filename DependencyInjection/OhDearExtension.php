@@ -7,7 +7,7 @@ use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Extension\Extension;
 use Symfony\Component\DependencyInjection\Loader;
 
-final class OhDearBundleExtension extends Extension
+final class OhDearExtension extends Extension
 {
     /**
      * @param array<mixed> $configs
@@ -18,12 +18,12 @@ final class OhDearBundleExtension extends Extension
         $config = $this->processConfiguration($configuration, $configs);
 
         $container->setParameter(
-            'oh_dear_bundle.secret',
+            'oh_dear.secret',
             $config['secret']
         );
 
         $container->setParameter(
-            'oh_dear_bundle.expiration_threshold',
+            'oh_dear.expiration_threshold',
             $config['expiration_threshold']
         );
 

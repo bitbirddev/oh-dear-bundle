@@ -19,7 +19,7 @@ final class CheckPass implements CompilerPassInterface
 
         $definition = $container->findDefinition(HealthChecker::class);
 
-        $taggedServices = $container->findTaggedServiceIds('oh_dear_bundle.checker');
+        $taggedServices = $container->findTaggedServiceIds('oh_dear.checker');
 
         foreach ($taggedServices as $id => $tags) {
             $definition->addMethodCall('addHealthChecker', [new Reference($id)]);

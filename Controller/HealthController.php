@@ -2,7 +2,7 @@
 
 namespace bitbirddev\OhDearBundle\Controller;
 
-use bitbirddev\OhDearBundle\HealthCheckInterface;
+use bitbirddev\OhDearBundle\HealthCheckerInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -12,7 +12,7 @@ final class HealthController
     public const OH_DEAR_HEADER = 'oh-dear-health-check-secret';
 
     public function __construct(
-        private readonly HealthCheckInterface $healthChecker,
+        private readonly HealthCheckerInterface $healthChecker,
         private readonly string $secret,
     ) {
     }
@@ -21,7 +21,7 @@ final class HealthController
     {
         $ohDearHeader = $request->headers->get(self::OH_DEAR_HEADER);
         if ($this->secret !== $ohDearHeader) {
-            return new JsonResponse([], Response::HTTP_NOT_FOUND);
+            return new JsonResponse([], Response::HTTP_UNAUTHORIZED);
         }
 
         $checkResults = $this->healthChecker->fetchLatestCheckResults();

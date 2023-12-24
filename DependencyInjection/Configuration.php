@@ -9,7 +9,7 @@ final class Configuration implements ConfigurationInterface
 {
     public function getConfigTreeBuilder(): TreeBuilder
     {
-        $treeBuilder = new TreeBuilder('oh_dear_bundle');
+        $treeBuilder = new TreeBuilder('oh_dear');
         $rootNode = $treeBuilder->getRootNode();
 
         $rootNode
