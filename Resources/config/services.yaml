@@ -1,0 +1,25 @@
+services:
+  bitbirddev\OhDearBundle\Controller\HealthController:
+    arguments:
+      - '@bitbirddev\OhDearBundle\HealthChecker'
+      - "%oh_dear_bundle.secret%"
+    public: true
+    tags:
+      - { name: "controller.service_arguments" }
+
+  bitbirddev\OhDearBundle\Command\HealthCheckCommand:
+    arguments:
+      - '@bitbirddev\OhDearBundle\HealthChecker'
+    tags:
+      - { name: "console.command" }
+
+  bitbirddev\OhDearBundle\HealthChecker:
+    arguments:
+      - '@bitbirddev\OhDearBundle\Store\RequestStore'
+      - "%oh_dear_bundle.expiration_threshold%"
+
+  bitbirddev\OhDearBundle\Store\CachePoolStore:
+    arguments:
+      - "@cache.app"
+
+  bitbirddev\OhDearBundle\Store\RequestStore: '@bitbirddev\OhDearBundle\Store\CachePoolStore'
