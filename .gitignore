@@ -6,6 +6,7 @@
 /vendor/
 ###< symfony/framework-bundle ###
 
+.phpactor.json
 .env
 .idea/
 clover.xml
