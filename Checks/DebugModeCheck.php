@@ -1,17 +1,17 @@
 <?php
 
+declare(strict_types=1);
+
 namespace bitbirddev\OhDearBundle\Checks;
 
-use bitbirddev\OhDearBundle\Checks\CheckInterface;
 use OhDear\HealthCheckResults\CheckResult;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 final class DebugModeCheck implements CheckInterface
 {
-    protected bool $expected = false;
-
     public function __construct(
-        protected ContainerInterface $container
+        protected ContainerInterface $container,
+        protected bool $expected = false,
     ) {
     }
 
@@ -25,13 +25,6 @@ final class DebugModeCheck implements CheckInterface
         return 0;
     }
 
-    public function expectedToBe(bool $bool): self
-    {
-        $this->expected = $bool;
-
-        return $this;
-    }
-
     public function runCheck(): CheckResult
     {
         $actual = $this->container->getParameter('kernel.debug');
@@ -40,7 +33,6 @@ final class DebugModeCheck implements CheckInterface
             name: $this->identify(),
             label: 'Debug Mode',
             shortSummary: $this->convertToWord($actual),
-            // status: CheckResult::STATUS_OK,
             meta: [
                 'expected' => $this->expected,
                 'actual' => $actual,

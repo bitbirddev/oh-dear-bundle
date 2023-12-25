@@ -1,8 +1,9 @@
 <?php
 
+declare(strict_types=1);
+
 namespace bitbirddev\OhDearBundle\Checks;
 
-use bitbirddev\OhDearBundle\Checks\CheckInterface;
 use JsonException;
 use OhDear\HealthCheckResults\CheckResult;
 use Symfony\Component\HttpClient\HttpClient;
@@ -11,12 +12,10 @@ use Symfony\Contracts\HttpClient\HttpClientInterface;
 
 final class MeilisearchCheck implements CheckInterface
 {
-    protected int $timeout = 1;
-
-    protected string $url = 'https://search.fit-4-future.de/health';
-
     public function __construct(
-        protected HttpClientInterface $client
+        protected HttpClientInterface $client,
+        protected string $url,
+        protected ?int $timeout = 1,
     ) {
     }
 
@@ -28,20 +27,6 @@ final class MeilisearchCheck implements CheckInterface
     public function frequency(): int
     {
         return 0;
-    }
-
-    public function timeout(int $seconds): self
-    {
-        $this->timeout = $seconds;
-
-        return $this;
-    }
-
-    public function url(string $url): self
-    {
-        $this->url = $url;
-
-        return $this;
     }
 
     public function runCheck(): CheckResult
@@ -62,21 +47,21 @@ final class MeilisearchCheck implements CheckInterface
                 ->status(CheckResult::STATUS_FAILED)
                 ->shortSummary('Unreachable')
                 ->notificationMessage("Could not reach {$this->url}.");
-        } catch(JsonException $exception) {
+        } catch (JsonException $exception) {
             return (new CheckResult($this->identify()))
                 ->status(CheckResult::STATUS_FAILED)
                 ->shortSummary('Response not valid JSON')
                 ->notificationMessage('Could not convert response to JSON');
         }
 
-        if (! $response->getContent()) {
+        if (!$response->getContent()) {
             return (new CheckResult($this->identify()))
                 ->status(CheckResult::STATUS_FAILED)
                 ->shortSummary('Did not respond')
                 ->notificationMessage("Did not get a response from {$this->url}.");
         }
 
-        if (! isset($content['status'])) {
+        if (!isset($content['status'])) {
             return (new CheckResult($this->identify()))
                 ->status(CheckResult::STATUS_FAILED)
                 ->shortSummary('Invalid response')
@@ -85,7 +70,7 @@ final class MeilisearchCheck implements CheckInterface
 
         $status = $content['status'];
 
-        if ($status !== 'available') {
+        if ('available' !== $status) {
             return (new CheckResult($this->identify()))
                 ->status(CheckResult::STATUS_FAILED)
                 ->shortSummary(ucfirst($status))
@@ -93,7 +78,7 @@ final class MeilisearchCheck implements CheckInterface
         }
 
         return (new CheckResult($this->identify()))
-                ->status(CheckResult::STATUS_OK)
+            ->status(CheckResult::STATUS_OK)
             ->shortSummary(ucfirst($status));
     }
 }

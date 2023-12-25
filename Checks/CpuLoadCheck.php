@@ -8,11 +8,12 @@ use Spatie\CpuLoadHealthCheck\CpuLoad;
 
 class CpuLoadCheck implements CheckInterface
 {
-    protected ?float $failWhenLoadIsHigherInTheLastMinute = null;
 
-    protected ?float $failWhenLoadIsHigherInTheLast5Minutes = null;
-
-    protected ?float $failWhenLoadIsHigherInTheLast15Minutes = null;
+  public function __construct(
+    protected ?float $failWhenLoadIsHigherInTheLastMinute = null,
+    protected ?float $failWhenLoadIsHigherInTheLast5Minutes = null,
+    protected ?float $failWhenLoadIsHigherInTheLast15Minutes = null
+) {}
 
     public function identify(): string
     {
@@ -24,26 +25,6 @@ class CpuLoadCheck implements CheckInterface
         return 0;
     }
 
-    public function failWhenLoadIsHigherInTheLastMinute(float $load): self
-    {
-        $this->failWhenLoadIsHigherInTheLastMinute = $load;
-
-        return $this;
-    }
-
-    public function failWhenLoadIsHigherInTheLast5Minutes(float $load): self
-    {
-        $this->failWhenLoadIsHigherInTheLast5Minutes = $load;
-
-        return $this;
-    }
-
-    public function failWhenLoadIsHigherInTheLast15Minutes(float $load): self
-    {
-        $this->failWhenLoadIsHigherInTheLast15Minutes = $load;
-
-        return $this;
-    }
 
     public function runCheck(): CheckResult
     {

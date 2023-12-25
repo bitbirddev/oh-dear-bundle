@@ -1,17 +1,17 @@
 <?php
 
+declare(strict_types=1);
+
 namespace bitbirddev\OhDearBundle\Checks;
 
-use bitbirddev\OhDearBundle\Checks\CheckInterface;
 use OhDear\HealthCheckResults\CheckResult;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 final class EnvironmentCheck implements CheckInterface
 {
-    protected string $expected = 'prod';
-
     public function __construct(
-        protected ContainerInterface $container
+        protected ContainerInterface $container,
+        protected string $expected = 'prod'
     ) {
     }
 
@@ -25,13 +25,6 @@ final class EnvironmentCheck implements CheckInterface
         return 0;
     }
 
-    public function expectedToBe(string $env): self
-    {
-        $this->expected = $env;
-
-        return $this;
-    }
-
     public function runCheck(): CheckResult
     {
         $actual = $this->container->getParameter('kernel.environment');
@@ -40,7 +33,6 @@ final class EnvironmentCheck implements CheckInterface
             name: $this->identify(),
             label: 'Environment',
             shortSummary: $actual,
-            // status: CheckResult::STATUS_OK,
             meta: [
                 'expected' => $this->expected,
                 'actual' => $actual,

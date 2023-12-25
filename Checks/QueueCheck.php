@@ -9,7 +9,7 @@ use OhDear\HealthCheckResults\CheckResult;
 use Symfony\Contracts\Cache\CacheInterface;
 use Symfony\Contracts\Cache\ItemInterface;
 
-final class SchedulerCheck implements CheckInterface
+final class QueueCheck implements CheckInterface
 {
     public function __construct(
         protected CacheInterface $cache
@@ -18,7 +18,7 @@ final class SchedulerCheck implements CheckInterface
 
     public function identify(): string
     {
-        return 'Scheduler';
+        return 'Queue';
     }
 
     public function frequency(): int
@@ -30,7 +30,7 @@ final class SchedulerCheck implements CheckInterface
     {
         $result = new CheckResult(
             name: $this->identify(),
-            label: 'Scheduler',
+            label: 'Queue',
             shortSummary: 'running',
         );
 
@@ -51,7 +51,7 @@ final class SchedulerCheck implements CheckInterface
 
     protected function hearsHeartbeat(): null|Carbon
     {
-        $key = 'ohdear-app-health-heartbeat-sync';
+        $key = 'ohdear-app-health-heartbeat-async';
 
         return $this->cache->get(key: $key, callback: static function (ItemInterface $item) {
             if ($item->isHit()) {

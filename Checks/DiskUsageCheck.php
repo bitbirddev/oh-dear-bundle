@@ -1,19 +1,21 @@
 <?php
 
+declare(strict_types=1);
+
 namespace bitbirddev\OhDearBundle\Checks;
 
-use bitbirddev\OhDearBundle\Checks\CheckInterface;
 use OhDear\HealthCheckResults\CheckResult;
 use Spatie\Regex\Regex;
 use Symfony\Component\Process\Process;
 
-class DiskUsageCheck implements CheckInterface
+final class DiskUsageCheck implements CheckInterface
 {
-    protected int $warningThreshold = 70;
-
-    protected int $errorThreshold = 90;
-
-    protected ?string $filesystemName = null;
+    public function __construct(
+        protected int $warningThreshold = 70,
+        protected int $errorThreshold = 90,
+        protected ?string $filesystemName = null
+    ) {
+    }
 
     public function identify(): string
     {
@@ -23,27 +25,6 @@ class DiskUsageCheck implements CheckInterface
     public function frequency(): int
     {
         return 0;
-    }
-
-    public function filesystemName(string $filesystemName): self
-    {
-        $this->filesystemName = $filesystemName;
-
-        return $this;
-    }
-
-    public function warnWhenUsedSpaceIsAbovePercentage(int $percentage): self
-    {
-        $this->warningThreshold = $percentage;
-
-        return $this;
-    }
-
-    public function failWhenUsedSpaceIsAbovePercentage(int $percentage): self
-    {
-        $this->errorThreshold = $percentage;
-
-        return $this;
     }
 
     public function runCheck(): CheckResult

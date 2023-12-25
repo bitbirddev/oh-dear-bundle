@@ -1,11 +1,11 @@
 <?php
 
+declare(strict_types=1);
+
 namespace bitbirddev\OhDearBundle\Checks;
 
-use bitbirddev\OhDearBundle\Checks\CheckInterface;
 use bitbirddev\OhDearBundle\Support\DbConnectionInfo;
 use Doctrine\ORM\EntityManagerInterface;
-use Exception;
 use OhDear\HealthCheckResults\CheckResult;
 use Throwable;
 
@@ -13,7 +13,8 @@ final class DBConnectionsCheck implements CheckInterface
 {
     public function __construct(
         private readonly EntityManagerInterface $entityManager,
-        protected DbConnectionInfo $dbinfo
+        protected DbConnectionInfo $dbinfo,
+        protected ?float $failWhenConnectionCountGreater = null
     ) {
     }
 
@@ -29,20 +30,24 @@ final class DBConnectionsCheck implements CheckInterface
 
     public function runCheck(): CheckResult
     {
-        $connection = $this->entityManager->getConnection();
-
         $result = new CheckResult(
             name: $this->identify(),
             label: 'Database Connections',
-            shortSummary: $this->dbinfo->connectionCount($connection).' connections',
-            status: CheckResult::STATUS_OK,
-            meta: ['connections' => $this->dbinfo->connectionCount($connection)]
         );
 
         try {
-            $this->entityManager->getConnection()->connect();
-            if (false === $this->entityManager->getConnection()->isConnected()) {
-                throw new Exception('Database connection is not working');
+            $connection = $this->entityManager->getConnection();
+            $connections = $this->dbinfo->connectionCount($connection);
+            $result->shortSummary($this->dbinfo->connectionCount($connection).' connections');
+            $result->status(CheckResult::STATUS_OK);
+            $result->meta(['connections' => $this->dbinfo->connectionCount($connection)]);
+
+            if ($this->failWhenConnectionCountGreater) {
+                if ($connections > $this->failWhenConnectionCountGreater) {
+                    $result->shortSummary("{$this->dbinfo->connectionCount($connection)} connections but only max. {$this->failWhenConnectionCountGreater} connections allowed");
+                    $result->status(CheckResult::STATUS_FAILED);
+                    $result->meta(['connections' => $this->dbinfo->connectionCount($connection)]);
+                }
             }
         } catch (Throwable) {
             $result->status = CheckResult::STATUS_FAILED;
@@ -50,8 +55,6 @@ final class DBConnectionsCheck implements CheckInterface
             $result->notificationMessage = 'Database connection is not working';
         }
 
-        ray($result);
-
-        return $result;
+      return $result;
     }
 }

@@ -1,17 +1,17 @@
 <?php
 
+declare(strict_types=1);
+
 namespace bitbirddev\OhDearBundle\Checks;
 
-use bitbirddev\OhDearBundle\Checks\CheckInterface;
 use OhDear\HealthCheckResults\CheckResult;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 final class OptimizedAppCheck implements CheckInterface
 {
-    protected bool $expected = true;
-
     public function __construct(
-        protected ContainerInterface $container
+        protected ContainerInterface $container,
+        protected bool $expected = true,
     ) {
     }
 
@@ -23,13 +23,6 @@ final class OptimizedAppCheck implements CheckInterface
     public function frequency(): int
     {
         return 0;
-    }
-
-    public function expectedToBe(string $env): self
-    {
-        $this->expected = $env;
-
-        return $this;
     }
 
     public function runCheck(): CheckResult
@@ -45,8 +38,7 @@ final class OptimizedAppCheck implements CheckInterface
         $result = new CheckResult(
             name: $this->identify(),
             label: 'Optimized App',
-            shortSummary: $actual,
-            // status: CheckResult::STATUS_OK,
+            shortSummary: $this->convertToWord($actual),
             meta: [
                 'expected' => $this->expected,
                 'actual' => $actual,
@@ -59,5 +51,10 @@ final class OptimizedAppCheck implements CheckInterface
                 ->notificationMessage('The `composer dump-env` command did not run.');
 
         return $result;
+    }
+
+    protected function convertToWord(bool $boolean): string
+    {
+        return $boolean ? 'true' : 'false';
     }
 }

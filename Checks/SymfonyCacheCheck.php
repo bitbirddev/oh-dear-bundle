@@ -1,8 +1,9 @@
 <?php
 
+declare(strict_types=1);
+
 namespace bitbirddev\OhDearBundle\Checks;
 
-use bitbirddev\OhDearBundle\Checks\CheckInterface;
 use OhDear\HealthCheckResults\CheckResult;
 use Symfony\Contracts\Cache\CacheInterface;
 use Symfony\Contracts\Cache\ItemInterface;
@@ -39,21 +40,6 @@ final class SymfonyCacheCheck implements CheckInterface
         return $result;
     }
 
-    protected function canWriteValuesToPimcoreCache(): bool
-    {
-        $bytes = random_bytes(5);
-        $string = bin2hex($bytes);
-        $expectedValue = $string;
-
-        $cacheName = "ohdear-health-check-pimcore-{$expectedValue}";
-
-        \Pimcore\Cache::save(data: $expectedValue, key: $cacheName, lifetime: 10, force:  true);
-        $actualValue = \Pimcore\Cache::load($cacheName);
-        \Pimcore\Cache::clearTag($cacheName);
-
-        return $actualValue === $expectedValue;
-    }
-
     protected function canWriteValuesToSymfonyCache(): bool
     {
         $bytes = random_bytes(5);
@@ -61,16 +47,16 @@ final class SymfonyCacheCheck implements CheckInterface
         $expectedValue = $string;
         $cacheName = "ohdear-health-check-symfony-{$expectedValue}";
 
-        $this->cache->get($cacheName, function (ItemInterface $item) use ($expectedValue) {
+        $this->cache->get($cacheName, static function (ItemInterface $item) use ($expectedValue) {
             $item->expiresAfter(10);
 
             return $expectedValue;
         });
 
-        $cachedValue = $this->cache->get($cacheName, function (ItemInterface $item) {
+        $cachedValue = $this->cache->get($cacheName, static function (ItemInterface $item) {
             return $item->get();
         });
 
-        return $expectedValue == $cachedValue;
+        return $expectedValue === $cachedValue;
     }
 }
