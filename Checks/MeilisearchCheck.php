@@ -79,6 +79,6 @@ final class MeilisearchCheck implements CheckInterface
 
         return (new CheckResult($this->identify()))
             ->status(CheckResult::STATUS_OK)
-            ->shortSummary(ucfirst($status));
+            ->shortSummary($status);
     }
 }
