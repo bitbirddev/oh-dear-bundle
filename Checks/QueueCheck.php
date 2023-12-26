@@ -49,7 +49,7 @@ final class QueueCheck implements CheckInterface
         return $result;
     }
 
-    protected function hearsHeartbeat(): null|Carbon
+    protected function hearsHeartbeat(): bool|Carbon
     {
         $key = 'ohdear-app-health-heartbeat-async';
 
