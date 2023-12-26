@@ -43,7 +43,7 @@ final class MeilisearchCheck implements CheckInterface
             $statusCode = $response->getStatusCode();
             $content = $response->toArray(false);
         } catch (TransportExceptionInterface $exception) {
-            return (new CheckResult($this->identify()))
+            return (new CheckResult(name: $this->identify(), label: 'Meilisearch'))
                 ->status(CheckResult::STATUS_FAILED)
                 ->shortSummary('Unreachable')
                 ->notificationMessage("Could not reach {$this->url}.");
