@@ -25,6 +25,5 @@ final class HeartbeatMessageAsyncHandler
 
             return Carbon::now('Europe/Berlin');
         });
-        ray($heartbeatDate);
     }
 }
