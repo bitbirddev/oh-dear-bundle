@@ -20,7 +20,7 @@ final class HeartbeatMessageSyncHandler
     public function __invoke(HeartbeatMessageSync $message): void
     {
         $key = 'ohdear-app-health-heartbeat-sync';
-        $heartbeatDate = $this->cache->get(key: $key, beta: 1.0, callback: static function (ItemInterface $item) {
+        $heartbeatDate = $this->cache->get(key: $key, beta: INF, callback: static function (ItemInterface $item) {
             $item->expiresAfter(310);
 
             return Carbon::now('Europe/Berlin');
