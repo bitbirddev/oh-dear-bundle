@@ -24,3 +24,15 @@ services:
 
   bitbirddev\OhDearBundle\Store\RequestStore: '@bitbirddev\OhDearBundle\Store\CachePoolStore'
   bitbirddev\OhDearBundle\Support\DbConnectionInfo: ~
+
+  bitbirddev\OhDearBundle\MessageHandler\HeartbeatMessageAsyncHandler:
+    arguments:
+      $cache: "@cache.app"
+    tags:
+      - { name: "messenger.message_handler" }
+
+  bitbirddev\OhDearBundle\MessageHandler\HeartbeatMessageSyncHandler:
+    arguments:
+      $cache: "@cache.app"
+    tags:
+      - { name: "messenger.message_handler" }

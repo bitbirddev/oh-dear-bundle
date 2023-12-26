@@ -35,6 +35,7 @@ final class SchedulerCheck implements CheckInterface
         );
 
         $lastBeat = $this->hearsHeartbeat();
+        ray($lastBeat);
 
         if ($lastBeat) {
             if ($lastBeat instanceof Carbon) {
@@ -54,9 +55,9 @@ final class SchedulerCheck implements CheckInterface
         $key = 'ohdear-app-health-heartbeat-sync';
 
         return $this->cache->get(key: $key, callback: static function (ItemInterface $item) {
-            if ($item->isHit()) {
-                return $item->get();
-            }
+            $item->expiresAfter(1);
+
+            return false;
         });
     }
 }

@@ -54,9 +54,9 @@ final class QueueCheck implements CheckInterface
         $key = 'ohdear-app-health-heartbeat-async';
 
         return $this->cache->get(key: $key, callback: static function (ItemInterface $item) {
-            if ($item->isHit()) {
-                return $item->get();
-            }
+            $item->expiresAfter(1);
+
+            return false;
         });
     }
 }

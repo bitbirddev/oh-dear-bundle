@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace bitbirddev\OhDearBundle;
 
 use bitbirddev\OhDearBundle\DependencyInjection\Compiler\CheckPass;
