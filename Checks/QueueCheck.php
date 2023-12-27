@@ -43,14 +43,14 @@ final class QueueCheck implements CheckInterface
                 return $result
                     ->status(CheckResult::STATUS_FAILED)
                     ->shortSummary('error')
-                    ->notificationMessage("The last run of the schedule was more than {$minutesAgo} minutes ago.")
+                    ->notificationMessage("The last run of the queue was more than {$minutesAgo} minutes ago.")
                     ->meta(['last_heartbeat' => $lastBeat]);
             }
 
             return $result
                 ->status(CheckResult::STATUS_OK)
                 ->shortSummary('Last run: '.$lastBeat->diffForHumans())
-                ->meta(['last_heartbeat' => $lastBeat, 'maxAge' => $this->heartbeatMaxAgeInMinutes]);
+                ->meta(['last_heartbeat' => $lastBeat, 'maxAgeInMinutes' => $this->heartbeatMaxAgeInMinutes]);
         }
 
         return $result->status(CheckResult::STATUS_FAILED)->shortSummary('error')->notificationMessage('CacheKey is not a Carbon instance.');
