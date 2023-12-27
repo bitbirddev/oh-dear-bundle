@@ -21,8 +21,6 @@ final class HeartbeatMessageAsyncHandler
     {
         $key = 'ohdear-app-health-heartbeat-async';
         $heartbeatDate = $this->cache->get(key: $key, beta: INF, callback: static function (ItemInterface $item) {
-            $item->expiresAfter(310);
-
             return Carbon::now('Europe/Berlin');
         });
     }

@@ -40,7 +40,7 @@ final class PimcoreCacheCheck implements CheckInterface
 
         $cacheName = "ohdear-health-check-pimcore-{$expectedValue}";
 
-        \Pimcore\Cache::save(data: $expectedValue, key: $cacheName, lifetime: 10, force: true, tags: ['heartbeat', 'ohdear']);
+        \Pimcore\Cache::save(data: $expectedValue, key: $cacheName, lifetime: 10, force: true);
         $actualValue = \Pimcore\Cache::load($cacheName);
         \Pimcore\Cache::clearTag($cacheName);
 

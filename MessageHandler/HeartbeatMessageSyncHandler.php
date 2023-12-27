@@ -21,8 +21,6 @@ final class HeartbeatMessageSyncHandler
     {
         $key = 'ohdear-app-health-heartbeat-sync';
         $heartbeatDate = $this->cache->get(key: $key, beta: INF, callback: static function (ItemInterface $item) {
-            $item->expiresAfter(310);
-
             return Carbon::now('Europe/Berlin');
         });
     }

@@ -7,12 +7,12 @@ namespace bitbirddev\OhDearBundle\Checks;
 use Carbon\Carbon;
 use OhDear\HealthCheckResults\CheckResult;
 use Symfony\Contracts\Cache\CacheInterface;
-use Symfony\Contracts\Cache\ItemInterface;
 
 final class QueueCheck implements CheckInterface
 {
     public function __construct(
-        protected CacheInterface $cache
+        protected CacheInterface $cache,
+        protected int $heartbeatMaxAgeInMinutes = 10,
     ) {
     }
 
@@ -36,27 +36,35 @@ final class QueueCheck implements CheckInterface
 
         $lastBeat = $this->hearsHeartbeat();
 
-        if ($lastBeat) {
-            if ($lastBeat instanceof Carbon) {
-                $result->meta(['last_beat' => $lastBeat]);
+        if ($lastBeat instanceof Carbon) {
+            $minutesAgo = $lastBeat->diffInMinutes() + 1;
+
+            if ($minutesAgo > $this->heartbeatMaxAgeInMinutes) {
+                return $result
+                    ->status(CheckResult::STATUS_FAILED)
+                    ->shortSummary('error')
+                    ->notificationMessage("The last run of the schedule was more than {$minutesAgo} minutes ago.")
+                    ->meta(['last_heartbeat' => $lastBeat]);
             }
+
+            return $result
+                ->status(CheckResult::STATUS_OK)
+                ->shortSummary('Last run: '.$lastBeat->diffForHumans())
+                ->meta(['last_heartbeat' => $lastBeat, 'maxAge' => $this->heartbeatMaxAgeInMinutes]);
         }
 
-        return $lastBeat
-            ? $result->status(CheckResult::STATUS_OK)
-            : $result->status(CheckResult::STATUS_FAILED)->shortSummary('error')->notificationMessage('not running');
-
-        return $result;
+        return $result->status(CheckResult::STATUS_FAILED)->shortSummary('error')->notificationMessage('CacheKey is not a Carbon instance.');
     }
 
     protected function hearsHeartbeat(): bool|Carbon
     {
         $key = 'ohdear-app-health-heartbeat-async';
+        $item = $this->cache->getItem(key: $key);
 
-        return $this->cache->get(key: $key, callback: static function (ItemInterface $item) {
-            $item->expiresAfter(1);
+        if ($item->isHit()) {
+            return $item->get();
+        }
 
-            return false;
-        });
+        return false;
     }
 }
