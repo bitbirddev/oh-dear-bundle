@@ -49,7 +49,7 @@ final class SchedulerCheck implements CheckInterface
 
             return $result
                 ->status(CheckResult::STATUS_OK)
-                ->shortSummary('Last run: '.$lastBeat->diffForHumans())
+                ->shortSummary('Last Heartbeat: '.$lastBeat->diffForHumans())
                 ->meta(['last_heartbeat' => $lastBeat, 'maxAgeInMinutes' => $this->heartbeatMaxAgeInMinutes]);
         }
 
