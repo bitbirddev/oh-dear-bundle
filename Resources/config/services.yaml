@@ -36,3 +36,5 @@ services:
       $cache: "@cache.app"
     tags:
       - { name: "messenger.message_handler" }
+
+  bitbirddev\OhDearBundle\Scheduler\DefaultScheduleProvider: ~
