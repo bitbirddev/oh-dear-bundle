@@ -5,12 +5,12 @@ declare(strict_types=1);
 namespace bitbirddev\OhDearBundle\Checks;
 
 use OhDear\HealthCheckResults\CheckResult;
-use Symfony\Component\DependencyInjection\ContainerInterface;
+use Symfony\Component\HttpKernel\KernelInterface;
 
 final class OptimizedAppCheck implements CheckInterface
 {
     public function __construct(
-        protected ContainerInterface $container,
+        protected KernelInterface $kernel,
         protected bool $expected = true,
     ) {
     }
@@ -28,7 +28,7 @@ final class OptimizedAppCheck implements CheckInterface
     public function runCheck(): CheckResult
     {
         // Get the project directory
-        $projectDir = $this->container->getParameter('kernel.project_dir');
+        $projectDir = $this->kernel->getProjectDir();
 
         // Check if the .env.local.php file exists
         $compiledEnvFilePath = $projectDir.'/.env.local.php';

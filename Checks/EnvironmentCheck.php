@@ -5,12 +5,12 @@ declare(strict_types=1);
 namespace bitbirddev\OhDearBundle\Checks;
 
 use OhDear\HealthCheckResults\CheckResult;
-use Symfony\Component\DependencyInjection\ContainerInterface;
+use Symfony\Component\HttpKernel\KernelInterface;
 
 final class EnvironmentCheck implements CheckInterface
 {
     public function __construct(
-        protected ContainerInterface $container,
+        protected KernelInterface $kernel,
         protected string $expected = 'prod'
     ) {
     }
@@ -27,7 +27,7 @@ final class EnvironmentCheck implements CheckInterface
 
     public function runCheck(): CheckResult
     {
-        $actual = $this->container->getParameter('kernel.environment');
+        $actual = $this->kernel->getEnvironment();
 
         $result = new CheckResult(
             name: $this->identify(),
