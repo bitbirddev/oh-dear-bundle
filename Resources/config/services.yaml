@@ -37,4 +37,6 @@ services:
     tags:
       - { name: "messenger.message_handler" }
 
-  bitbirddev\OhDearBundle\Scheduler\DefaultScheduleProvider: ~
+  bitbirddev\OhDearBundle\Schedule\DefaultScheduleProvider:
+    autoconfigure: true
+    autowire: true

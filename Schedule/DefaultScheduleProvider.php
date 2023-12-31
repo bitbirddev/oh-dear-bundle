@@ -16,9 +16,15 @@ final class DefaultScheduleProvider implements ScheduleProviderInterface
 {
     public function getSchedule(): Schedule
     {
-        return (new Schedule())->add(
-            RecurringMessage::every('1 minute', new HeartbeatMessageSync()),
-            RecurringMessage::every('1 minute', new HeartbeatMessageAsync()),
+        if (class_exists('App\Schedule\DefaultScheduleProvider')) {
+            $schedule = (new \App\Schedule\DefaultScheduleProvider())->getSchedule();
+        } else {
+            $schedule = new Schedule();
+        }
+
+        return $schedule->add(
+            RecurringMessage::every('4 minute', new HeartbeatMessageSync()),
+            RecurringMessage::every('4 minute', new HeartbeatMessageAsync()),
         );
     }
 }
