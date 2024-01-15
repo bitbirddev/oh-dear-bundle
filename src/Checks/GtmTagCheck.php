@@ -13,6 +13,7 @@ use Symfony\Component\HttpKernel\KernelInterface;
 final class GtmTagCheck implements CheckInterface
 {
     protected ?stdClass $sites = null;
+    protected bool $warnWhenGtmTagIsMissing = true;
 
     public function __construct(
         protected KernelInterface $kernel
@@ -49,9 +50,13 @@ final class GtmTagCheck implements CheckInterface
             return $result->failed('The GoogleTagManager is not set up for any Sites');
         }
 
-        return $this->hasSitesWithoutGtmTag()
-            ? $result->failed('The GoogleTagManager is not set up for all Sites`')
-            : $result->shortSummary('Active Tags: '.implode(',', $this->listGtmTags()))->ok();
+        if ($this->warnWhenGtmTagIsMissing) {
+            return $this->hasSitesWithoutGtmTag()
+                ? $result->failed('The GoogleTagManager is not set up for all Sites')
+                : $result->shortSummary('Tags: '.implode(', ', $this->listGtmTags()))->ok();
+        }
+
+        return $result->shortSummary('Tags: '.count($this->listGtmTags()) ? implode(', ', $this->listGtmTags()) : 'none')->ok();
     }
 
     protected function hasGtmBundleInstalled(): bool
@@ -79,5 +84,12 @@ final class GtmTagCheck implements CheckInterface
         }
 
         return false;
+    }
+
+    public function dontWarnWhenTagIsMissing(): self
+    {
+        $this->warnWhenGtmTagIsMissing = false;
+
+        return $this;
     }
 }
