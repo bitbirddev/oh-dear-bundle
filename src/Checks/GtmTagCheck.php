@@ -50,13 +50,15 @@ final class GtmTagCheck implements CheckInterface
             return $result->failed('The GoogleTagManager is not set up for any Sites');
         }
 
+        $tags = count($this->listGtmTags()) ? implode(', ', $this->listGtmTags()) : 'none';
+
         if ($this->warnWhenGtmTagIsMissing) {
             return $this->hasSitesWithoutGtmTag()
                 ? $result->failed('The GoogleTagManager is not set up for all Sites')
-                : $result->shortSummary('Tags: '.implode(', ', $this->listGtmTags()))->ok();
+                : $result->shortSummary('Tags: '.$tags)->ok();
         }
 
-        return $result->shortSummary('Tags: '.count($this->listGtmTags()) ? implode(', ', $this->listGtmTags()) : 'none')->ok();
+        return $result->shortSummary('Tags: '.$tags)->ok();
     }
 
     protected function hasGtmBundleInstalled(): bool
