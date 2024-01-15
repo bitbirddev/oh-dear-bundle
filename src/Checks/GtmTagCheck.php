@@ -5,21 +5,23 @@ declare(strict_types=1);
 namespace bitbirddev\OhDearBundle\Checks;
 
 use bitbirddev\OhDearBundle\CheckResult;
-use Pimcore\Model\Tool\SettingsStore;
 use bitbirddev\OhDearBundle\Contracts\CheckInterface;
+use Pimcore\Model\Tool\SettingsStore;
 use stdClass;
 use Symfony\Component\HttpKernel\KernelInterface;
 
 final class GtmTagCheck implements CheckInterface
 {
-    protected stdClass $sites;
+    protected ?stdClass $sites = null;
 
     public function __construct(
         protected KernelInterface $kernel
     ) {
         $store = SettingsStore::get('reports', 'pimcore');
         $data = json_decode($store->getData());
-        $this->sites = $data->tagmanager->sites;
+        if ($data->tagmanager->sites instanceof stdClass) {
+            $this->sites = $data->tagmanager->sites;
+        }
     }
 
     public function identify(): string
@@ -43,8 +45,12 @@ final class GtmTagCheck implements CheckInterface
             return $result->skipped('The GoogleTagManager Bundle is not installed');
         }
 
+        if (!$this->sites) {
+            return $result->failed('The GoogleTagManager is not set up for any Sites');
+        }
+
         return $this->hasSitesWithoutGtmTag()
-            ? $result->failed('The GoogleTagManager is not setup for all Sites`')
+            ? $result->failed('The GoogleTagManager is not set up for all Sites`')
             : $result->shortSummary('Active Tags: '.implode(',', $this->listGtmTags()))->ok();
     }
 
