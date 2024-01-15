@@ -1,0 +1,4 @@
+oh_dear_health_check:
+  path: /health-check
+  controller: bitbirddev\OhDearBundle\Controller\HealthController
+  methods: [GET, HEAD]

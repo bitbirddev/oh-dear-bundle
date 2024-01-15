@@ -17,7 +17,7 @@
   "license": "MIT",
   "autoload": {
     "psr-4": {
-      "bitbirddev\\OhDearBundle\\": ""
+      "bitbirddev\\OhDearBundle\\": "src/"
     }
   },
   "authors": [
@@ -34,7 +34,8 @@
     "phpunit/phpunit": "^9.0",
     "phpunit/php-code-coverage": "^9.0",
     "symfony/phpunit-bridge": "^6.3",
-    "doctrine/orm": "^2.16"
+    "doctrine/orm": "^2.16",
+    "pimcore/pimcore": "^11"
   },
   "config": {
     "allow-plugins": {

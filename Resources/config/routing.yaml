@@ -1,4 +1,0 @@
-_bitbirddev_health:
-  path: /health-check
-  controller: bitbirddev\OhDearBundle\Controller\HealthController
-  methods: [GET, HEAD]
