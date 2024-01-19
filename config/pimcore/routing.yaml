@@ -1,0 +1,2 @@
+oh_dear_bundle:
+  resource: "../routing.yaml"
