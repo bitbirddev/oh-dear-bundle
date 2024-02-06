@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 namespace bitbirddev\OhDearBundle\Store;
 
+use bitbirddev\OhDearBundle\CheckResult;
 use DateTimeImmutable;
-use OhDear\HealthCheckResults\CheckResult;
 
 use function time;
 
-final class StoredResult
+final class StoreItem
 {
     public readonly DateTimeImmutable $createdAt;
 

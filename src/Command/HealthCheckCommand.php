@@ -31,6 +31,7 @@ final class HealthCheckCommand extends Command
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $omitCache = $input->getOption('omit-cache');
+
         $this->healthChecker->runAllChecksAndStore((bool) $omitCache);
 
         return Command::SUCCESS;

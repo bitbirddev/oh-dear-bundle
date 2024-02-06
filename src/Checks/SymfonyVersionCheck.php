@@ -5,10 +5,10 @@ declare(strict_types=1);
 namespace bitbirddev\OhDearBundle\Checks;
 
 use bitbirddev\OhDearBundle\CheckResult;
+use bitbirddev\OhDearBundle\Contracts\CheckInterface;
 use Composer\Semver\Semver;
 use Symfony\Component\HttpKernel\Kernel;
 use Symfony\Component\HttpKernel\KernelInterface;
-use bitbirddev\OhDearBundle\Contracts\CheckInterface;
 
 final class SymfonyVersionCheck implements CheckInterface
 {

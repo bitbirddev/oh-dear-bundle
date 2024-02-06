@@ -6,11 +6,13 @@ namespace bitbirddev\OhDearBundle;
 
 use bitbirddev\OhDearBundle\Contracts\CheckInterface;
 use bitbirddev\OhDearBundle\Contracts\HealthCheckerInterface;
-use bitbirddev\OhDearBundle\Store\ResultStore;
-use bitbirddev\OhDearBundle\Store\StoredResult;
+use bitbirddev\OhDearBundle\Store\StoreInterface;
+use bitbirddev\OhDearBundle\Store\StoreItem;
 use DateTimeImmutable;
 use OhDear\HealthCheckResults\CheckResult;
 use OhDear\HealthCheckResults\CheckResults;
+use Symfony\Component\DependencyInjection\Attribute\Autowire;
+use Symfony\Component\DependencyInjection\Attribute\TaggedIterator;
 
 final class HealthChecker implements HealthCheckerInterface
 {
@@ -18,8 +20,12 @@ final class HealthChecker implements HealthCheckerInterface
     private array $checks = [];
 
     public function __construct(
-        private readonly ResultStore $resultStore,
+        private readonly StoreInterface $store,
+
+        #[Autowire(param: 'oh_dear.expiration_threshold')]
         private readonly int $expirationThreshold,
+
+        #[TaggedIterator(tag: 'oh_dear.health_check_provider')]
         private iterable $providers = [],
     ) {
         foreach ($this->providers as $provider) {
@@ -45,15 +51,15 @@ final class HealthChecker implements HealthCheckerInterface
             $result = null;
 
             if (0 < $checker->frequency()) {
-                $lastResult = $this->resultStore->fetchLastResult($checker->identify());
+                $lastResult = $this->store->fetchLastResult($checker->identify());
                 $result = $lastResult?->checkResult;
             }
 
             if (null === $result) {
                 $result = $checker->runCheck();
-                $this->resultStore->save(
+                $this->store->save(
                     $checker->identify(),
-                    new StoredResult(
+                    new StoreItem(
                         $checker->identify(),
                         $result
                     )
@@ -90,7 +96,7 @@ final class HealthChecker implements HealthCheckerInterface
     public function runAllChecksAndStore(bool $omitCache = false): void
     {
         foreach ($this->checks as $checker) {
-            $lastResult = $this->resultStore->fetchLastResult($checker->identify());
+            $lastResult = $this->store->fetchLastResult($checker->identify());
 
             if (false === $omitCache && null !== $lastResult && false === $lastResult->isExpired($checker->frequency(), 0)) {
                 continue;
@@ -98,9 +104,9 @@ final class HealthChecker implements HealthCheckerInterface
 
             $result = $checker->runCheck();
 
-            $this->resultStore->save(
+            $this->store->save(
                 $checker->identify(),
-                new StoredResult(
+                new StoreItem(
                     $checker->identify(),
                     $result
                 )

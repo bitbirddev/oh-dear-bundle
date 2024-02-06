@@ -1,42 +1,10 @@
 services:
-  bitbirddev\OhDearBundle\HealthChecker:
-    arguments:
-      $resultStore: '@bitbirddev\OhDearBundle\Store\RequestStore'
-      $expirationThreshold: "%oh_dear.expiration_threshold%"
-      $providers: !tagged_iterator oh_dear.health_check_provider
-
-  bitbirddev\OhDearBundle\Controller\HealthController:
-    arguments:
-      - '@bitbirddev\OhDearBundle\HealthChecker'
-      - "%oh_dear.secret%"
-    public: true
-    tags:
-      - { name: "controller.service_arguments" }
-
-  bitbirddev\OhDearBundle\Command\HealthCheckCommand:
-    arguments:
-      - '@bitbirddev\OhDearBundle\HealthChecker'
-    tags:
-      - { name: "console.command" }
-
-  bitbirddev\OhDearBundle\Store\CachePoolStore:
-    arguments:
-      - "@cache.ohdear"
-
-  bitbirddev\OhDearBundle\Store\RequestStore: '@bitbirddev\OhDearBundle\Store\CachePoolStore'
-
-  bitbirddev\OhDearBundle\MessageHandler\HeartbeatMessageAsyncHandler:
-    arguments:
-      $cache: "@cache.ohdear"
-    tags:
-      - { name: "messenger.message_handler" }
-
-  bitbirddev\OhDearBundle\MessageHandler\HeartbeatMessageSyncHandler:
-    arguments:
-      $cache: "@cache.ohdear"
-    tags:
-      - { name: "messenger.message_handler" }
-
-  bitbirddev\OhDearBundle\Schedule\DefaultScheduleProvider:
+  _defaults:
     autoconfigure: true
     autowire: true
+
+  bitbirddev\OhDearBundle\:
+    resource: "../src/"
+    exclude:
+      - "../src/Checks/"
+      - "../src/DependencyInjection/"

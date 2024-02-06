@@ -12,7 +12,8 @@
     "symfony/console": "^6.0 | ^7.0",
     "nesbot/carbon": "^2.72",
     "symfony/messenger": "^6.0 | ^7.0",
-    "symfony/scheduler": "^6.0 | ^7.0"
+    "symfony/scheduler": "^6.0 | ^7.0",
+    "composer/semver": "^3.4"
   },
   "license": "MIT",
   "autoload": {
