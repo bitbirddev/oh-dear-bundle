@@ -8,10 +8,28 @@ use bitbirddev\OhDearBundle\Contracts\HealthCheckProviderInterface;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Extension\Extension;
+use Symfony\Component\DependencyInjection\Extension\PrependExtensionInterface;
 use Symfony\Component\DependencyInjection\Loader;
 
-final class OhDearExtension extends Extension
+final class OhDearExtension extends Extension implements PrependExtensionInterface
 {
+    public function prepend(ContainerBuilder $containerBuilder): void
+    {
+        $containerBuilder->prependExtensionConfig('framework', [
+            'cache' => [
+                'pools' => [
+                    'cache.ohdear' => [
+                        'clearer' => 'cache.app_clearer',
+                        'public' => true,
+                        'tags' => true,
+                        'adapter' => 'cache.adapter.redis_tag_aware',
+                        'provider' => 'redis://%env(REDIS_CACHE_HOST)%/%env(REDIS_CACHE_DB)%',
+                    ],
+                ],
+            ],
+        ]);
+    }
+
     /**
      * @param array<mixed> $configs
      */
