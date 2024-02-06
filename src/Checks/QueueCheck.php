@@ -5,16 +5,18 @@ declare(strict_types=1);
 namespace bitbirddev\OhDearBundle\Checks;
 
 use bitbirddev\OhDearBundle\CheckResult;
-use Carbon\Carbon;
-use Symfony\Contracts\Cache\CacheInterface;
 use bitbirddev\OhDearBundle\Contracts\CheckInterface;
+use Carbon\Carbon;
+use Psr\Cache\CacheItemPoolInterface;
+use Symfony\Component\DependencyInjection\Attribute\Target;
 
 final class QueueCheck implements CheckInterface
 {
     protected int $heartbeatMaxAgeInMinutes = 10;
 
     public function __construct(
-        protected CacheInterface $cache,
+        #[Target('cache.ohdear')]
+        protected CacheItemPoolInterface $cache,
     ) {
     }
 

@@ -9,7 +9,6 @@ use Carbon\Carbon;
 use Psr\Cache\CacheItemPoolInterface;
 use Symfony\Component\DependencyInjection\Attribute\Target;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
-use Symfony\Contracts\Cache\ItemInterface;
 
 #[AsMessageHandler()]
 final class HeartbeatMessageAsyncHandler
@@ -22,9 +21,7 @@ final class HeartbeatMessageAsyncHandler
 
     public function __invoke(HeartbeatMessageAsync $message): void
     {
-        $key = 'ohdear-app-health-heartbeat-async';
-        $heartbeatDate = $this->cache->get(key: $key, beta: INF, callback: static function (ItemInterface $item) {
-            return Carbon::now('Europe/Berlin');
-        });
+        $item = $this->cache->getItem('ohdear-app-health-heartbeat-async')->set(Carbon::now('Europe/Berlin'));
+        $this->cache->save($item);
     }
 }
