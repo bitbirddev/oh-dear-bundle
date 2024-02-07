@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace bitbirddev\OhDearBundle\DependencyInjection;
 
+use bitbirddev\OhDearBundle\Contracts\CheckInterface;
 use bitbirddev\OhDearBundle\Contracts\HealthCheckProviderInterface;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
@@ -37,6 +38,9 @@ final class OhDearExtension extends Extension implements PrependExtensionInterfa
     {
         $container->registerForAutoconfiguration(HealthCheckProviderInterface::class)
             ->addTag('oh_dear.health_check_provider');
+
+        $container->registerForAutoconfiguration(CheckInterface::class)
+            ->addTag('oh_dear.health_check');
 
         $configuration = new Configuration();
         $config = $this->processConfiguration($configuration, $configs);

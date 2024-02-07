@@ -6,5 +6,4 @@ services:
   bitbirddev\OhDearBundle\:
     resource: "../src/"
     exclude:
-      - "../src/Checks/"
       - "../src/DependencyInjection/"
