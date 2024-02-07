@@ -23,8 +23,8 @@ final class DefaultScheduleProvider implements ScheduleProviderInterface
         }
 
         return $schedule->add(
-            RecurringMessage::every('1 minute', new HeartbeatMessageSync()),
-            RecurringMessage::every('1 minute', new HeartbeatMessageAsync()),
+            RecurringMessage::every('5 minutes', new HeartbeatMessageSync()),
+            RecurringMessage::every('5 minutes', new HeartbeatMessageAsync()),
         );
     }
 }
