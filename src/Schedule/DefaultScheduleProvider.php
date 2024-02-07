@@ -23,8 +23,9 @@ final class DefaultScheduleProvider implements ScheduleProviderInterface
         }
 
         return $schedule->add(
-            RecurringMessage::every('5 minutes', new HeartbeatMessageSync()),
-            RecurringMessage::every('5 minutes', new HeartbeatMessageAsync()),
+            // has to be lower than the max execution time of bin/console messenger:consume
+            RecurringMessage::every('3 minutes', new HeartbeatMessageSync()),
+            RecurringMessage::every('3 minutes', new HeartbeatMessageAsync()),
         );
     }
 }

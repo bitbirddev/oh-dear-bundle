@@ -56,7 +56,7 @@ final class QueueCheck implements CheckInterface
                 ->meta(['last_heartbeat' => $lastBeat, 'maxAgeInMinutes' => $this->heartbeatMaxAgeInMinutes]);
         }
 
-        return $result->shortSummary('error')->failed('CacheKey is not a Carbon instance.');
+        return $result->failed('CacheKey is not a Carbon instance.')->shortSummary('error');
     }
 
     protected function hearsHeartbeat(): bool|Carbon

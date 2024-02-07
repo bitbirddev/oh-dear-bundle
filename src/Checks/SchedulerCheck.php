@@ -56,7 +56,7 @@ final class SchedulerCheck implements CheckInterface
                 ->meta(['last_heartbeat' => $lastBeat, 'maxAgeInMinutes' => $this->heartbeatMaxAgeInMinutes]);
         }
 
-        return $result->status(CheckResult::STATUS_FAILED)->shortSummary('error')->notificationMessage('CacheKey is not a Carbon instance.');
+        return $result->failed('CacheKey is not a Carbon instance.')->shortSummary('error');
     }
 
     protected function hearsHeartbeat(): bool|Carbon
