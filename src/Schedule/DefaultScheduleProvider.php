@@ -23,7 +23,7 @@ final class DefaultScheduleProvider implements ScheduleProviderInterface
     public function getSchedule(): Schedule
     {
         if (class_exists('App\Schedule\DefaultScheduleProvider')) {
-            $schedule = (new \App\Schedule\DefaultScheduleProvider())->getSchedule();
+            $schedule = (new \App\Schedule\DefaultScheduleProvider($this->cache))->getSchedule();
         } else {
             $schedule = new Schedule();
         }
