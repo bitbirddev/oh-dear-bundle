@@ -5,11 +5,12 @@ declare(strict_types=1);
 namespace bitbirddev\OhDearBundle\Checks;
 
 use bitbirddev\OhDearBundle\CheckResult;
+use bitbirddev\OhDearBundle\Contracts\CheckInterface;
 use JsonException;
 use Symfony\Component\HttpClient\HttpClient;
+use Symfony\Component\HttpClient\RetryableHttpClient;
 use Symfony\Contracts\HttpClient\Exception\TransportExceptionInterface;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
-use bitbirddev\OhDearBundle\Contracts\CheckInterface;
 
 final class MeilisearchCheck implements CheckInterface
 {
@@ -40,7 +41,7 @@ final class MeilisearchCheck implements CheckInterface
         }
 
         try {
-            $httpClient = HttpClient::create();
+            $httpClient = new RetryableHttpClient(HttpClient::create());
             $response = $httpClient->request('GET', $this->url, [
                 'timeout' => $this->timeout,
                 'headers' => [
