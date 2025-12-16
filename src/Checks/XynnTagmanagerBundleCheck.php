@@ -7,20 +7,22 @@ namespace bitbirddev\OhDearBundle\Checks;
 use bitbirddev\OhDearBundle\CheckResult;
 use bitbirddev\OhDearBundle\Contracts\CheckInterface;
 use Exception;
-use Symfony\Component\DependencyInjection\ContainerInterface;
+use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
+use Symfony\Component\HttpKernel\KernelInterface;
 
 final class XynnTagmanagerBundleCheck implements CheckInterface
 {
     protected ?string $expectedGtmId = null;
 
     public function __construct(
-        protected ContainerInterface $container,
+        protected KernelInterface $kernel,
+        protected ParameterBagInterface $parameterBag,
     ) {
     }
 
     public function identify(): string
     {
-        return 'Google Tag Manager (xynnn/google-tag-manager-bundle)';
+        return 'GoogleTagManager-xynnn-google-tag-manager-bundle';
     }
 
     public function frequency(): int
@@ -32,7 +34,7 @@ final class XynnTagmanagerBundleCheck implements CheckInterface
     {
         $result = CheckResult::make(
             name: $this->identify(),
-            label: 'GoogleTagManager',
+            label: 'GoogleTagManager (xynn/google-tag-manager-bundle)',
         );
 
         // Check 1: Bundle installed and active
@@ -56,35 +58,42 @@ final class XynnTagmanagerBundleCheck implements CheckInterface
             return $result->failed("GTM ID mismatch: expected '{$this->expectedGtmId}', got '{$gtmId}'");
         }
 
-        return $result->ok("GTM ID: {$gtmId}");
+        return $result->ok("GTM ID: {$gtmId}")->shortSummary($gtmId);
     }
 
     protected function hasGtmBundleInstalled(): bool
     {
-        // Check if the xynnn/google-tag-manager-bundle bundle class exists
-        return class_exists(\Xynn\GoogleTagManagerBundle\XynnGoogleTagManagerBundle::class);
+        // Check if the bundle is registered in the kernel
+        foreach ($this->kernel->getBundles() as $bundle) {
+            if ($bundle instanceof \Xynnn\GoogleTagManagerBundle\GoogleTagManagerBundle) {
+                return true;
+            }
+        }
+
+        // Fallback: check if the bundle class exists
+        return class_exists(\Xynnn\GoogleTagManagerBundle\GoogleTagManagerBundle::class);
     }
 
     protected function hasValidConfiguration(): bool
     {
         try {
             // Check if google_tag_manager.enabled exists and is true
-            if (!$this->container->hasParameter('google_tag_manager.enabled')) {
+            if (!$this->parameterBag->has('google_tag_manager.enabled')) {
                 return false;
             }
 
-            $enabled = $this->container->getParameter('google_tag_manager.enabled');
+            $enabled = $this->parameterBag->get('google_tag_manager.enabled');
             if (true !== $enabled) {
                 return false;
             }
 
             // Check if google_tag_manager.id exists
-            if (!$this->container->hasParameter('google_tag_manager.id')) {
+            if (!$this->parameterBag->has('google_tag_manager.id')) {
                 return false;
             }
 
             // Check if google_tag_manager.autoAppend exists
-            if (!$this->container->hasParameter('google_tag_manager.autoAppend')) {
+            if (!$this->parameterBag->has('google_tag_manager.autoAppend')) {
                 return false;
             }
 
@@ -109,8 +118,8 @@ final class XynnTagmanagerBundleCheck implements CheckInterface
 
         // Try to get from container parameter (resolved value)
         try {
-            if ($this->container->hasParameter('google_tag_manager.id')) {
-                $id = $this->container->getParameter('google_tag_manager.id');
+            if ($this->parameterBag->has('google_tag_manager.id')) {
+                $id = $this->parameterBag->get('google_tag_manager.id');
                 if (!empty($id) && !str_starts_with($id, '%env(')) {
                     return $id;
                 }
