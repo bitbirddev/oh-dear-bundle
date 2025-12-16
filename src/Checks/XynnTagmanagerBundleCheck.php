@@ -58,7 +58,7 @@ final class XynnTagmanagerBundleCheck implements CheckInterface
             return $result->failed("GTM ID mismatch: expected '{$this->expectedGtmId}', got '{$gtmId}'");
         }
 
-        return $result->ok("GTM ID: {$gtmId}")->shortSummary($gtmId);
+        return $result->ok("{$gtmId}")->shortSummary($gtmId);
     }
 
     protected function hasGtmBundleInstalled(): bool
